@@ -4,7 +4,6 @@
 #include <string.h>
 
 FILE *Fd;
-static char text[150];
 void openFile(const char[]);
 char* search(const char[]);
 void ksamp();
@@ -20,6 +19,8 @@ int main(int argc, char* argv[]) {
     case 'l':
       interval = atoi(optarg); //me trae el primer parametro
       printf("%s %d \n", "ksamp pro con parametros", interval);
+      interval = atoi(optarg+strlen(optarg)+1);
+      printf("%s %d \n", " otro parametro ", interval);
       break;
     case 's':
       printf("ksamp con agregado \n");
@@ -63,6 +64,7 @@ char* search(const char searchedWord[]) {
   //recibe una palabra de busqueda y devuelve un array con los datos 
 
   int tmp1, tmp2;
+  static char text[150];
   while (feof(Fd) == 0)
 
   {
@@ -88,10 +90,13 @@ char* search(const char searchedWord[]) {
           tmp2++;
 
           if (tmp1 == strlen(searchedWord))
+          {
             return text;
+          }
         }
-      }
+     }
     }
+
   }
 
 }
