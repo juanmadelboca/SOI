@@ -42,15 +42,15 @@ int main(int argc, char* argv[]) {
 
 char* upTime(char texto[]){
   //toma la linea de texto y me la devuelve con el formato deseado
-  float uptime;
-  int days,hours,minutes,seconds;
+  float uptime,seconds;
+  int days,hours,minutes;
   static char formatedUpTime[25];
   sscanf(texto,"%f ",&uptime);
   days=uptime/86400;
   hours=(uptime/3600)-(days*24);
   minutes=(uptime/60)-((days*24+hours)*60);
   seconds=uptime-((((days*24+hours)*60)+minutes)*60);
-  snprintf(formatedUpTime, sizeof formatedUpTime, "UpTime: %dD %d:%d:%d \n",days,hours,minutes,seconds);
+  snprintf(formatedUpTime, sizeof formatedUpTime, "UpTime: %dD %d:%02d:%02.2f \n",days,hours,minutes,seconds);
   return formatedUpTime;
 
 }
