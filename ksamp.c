@@ -14,7 +14,6 @@ int main(int argc, char* argv[]) {
 
   int option = 0;
   int interval;
-  ksamp();
   // :2 no se muere pero como gestiono el nuevo parametro
   while ((option = getopt(argc, argv, "l:s")) != -1) { //tengo que poner los cases y si llevan mas argumentos : (por cada uno?)
     switch (option) {
@@ -32,9 +31,14 @@ int main(int argc, char* argv[]) {
       printf("comando erroneo \n");
     }
   }
+  while(1){
+
+  ksamp();
+  }
 
   return 0;
 }
+
 
 char* upTime(char texto[]){
   //toma la linea de texto y me la devuelve con el formato deseado
@@ -74,6 +78,11 @@ void ksamp() {
   openFile("/proc/uptime");
   printf("%s",upTime(search(".")));
   fclose(Fd);
+  for (int i = 0; i < 300000000; ++i);
+  {
+    /* code */
+  }
+  system("clear");
 }
 
 char* search(const char searchedWord[]) {
