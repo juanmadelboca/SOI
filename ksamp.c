@@ -7,8 +7,10 @@ FILE *Fd;
 void openFile(const char[]);
 char* search(const char[]);
 void ksamp();
+char * upTime(char[]);
 
 int main(int argc, char* argv[]) {
+ 
 
   int option = 0;
   int interval;
@@ -34,6 +36,20 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
+char* upTime(char texto[]){
+  //toma la linea de texto y me la devuelve con el formato deseado
+  float uptime;
+  int days,hours,minutes,seconds;
+  static char formatedUpTime[25];
+  sscanf(texto,"%f ",&uptime);
+  days=uptime/86400;
+  hours=(uptime/3600)-(days*24);
+  minutes=(uptime/60)-((days*24+hours)*60);
+  seconds=uptime-((((days*24+hours)*60)+minutes)*60);
+  snprintf(formatedUpTime, sizeof formatedUpTime, "UpTime: %dD %d:%d:%d \n",days,hours,minutes,seconds);
+  return formatedUpTime;
+
+}
 void openFile(const char path[]) {
   Fd = fopen(path, "r");
   if (Fd == NULL) {
@@ -56,7 +72,7 @@ void ksamp() {
   fclose(Fd);
 
   openFile("/proc/uptime");
-  printf("%s",search("."));
+  printf("%s",upTime(search(".")));
   fclose(Fd);
 }
 
