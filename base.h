@@ -7,4 +7,5 @@ void openFile(const char[]);
 char* search(const char[]);
 char* upTime(char[]);
 void load();
+int fileSystem();
 void print();

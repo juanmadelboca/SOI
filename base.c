@@ -10,7 +10,7 @@ struct base
 	char cpuModel[100];
 	char kernel[150];
 	char upTime[60];
-	const char *filesKernel;
+	int fileSystems;
 
 	
 };
@@ -25,13 +25,14 @@ void load(base *b){
 
 	openFile("/proc/version");
 	strncpy(b->kernel,search("version")+8,15);
-	fclose(Fd);
-
-  
+	fclose(Fd); 
 
 	 openFile("/proc/uptime");
 	 strcpy(b->upTime,upTime(search(".")));
 	 fclose(Fd);
+   openFile("/proc/filesystems");
+   b->fileSystems=fileSystem();
+   fclose(Fd);
 }
 
 void openFile(const char path[]) {
@@ -56,6 +57,16 @@ char* upTime(char texto[]){
   snprintf(formatedUpTime, sizeof formatedUpTime, " %dD %d:%02d:%02.2f \n",days,hours,minutes,seconds);
   return formatedUpTime;
 
+}
+int fileSystem(){
+  int files=0;
+  char text[150];
+  while (feof(Fd) == 0){
+
+  fgets(text, 150, Fd); //lee una linea de el archivo
+  files++;
+   }
+   return files;
 }
 
 
@@ -115,6 +126,7 @@ void print(base *b){
 	printf("Modelo CPU : %s", b->cpuModel);
 	printf("Kernel : %sc \n", b->kernel); //agrego una c aca porque cuando recorto justo en el espacio aparecen caracteres raros
   printf("UpTime : %s",b->upTime );
+  printf("Cantidad de FS : %d\n",b->fileSystems );
 }
 
 
