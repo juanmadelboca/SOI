@@ -1,6 +1,8 @@
 #include "ksamp.h"
 
 int main(int argc, char* argv[]) {
+
+  struct base b;
  
 
   int option = 0;
@@ -24,7 +26,8 @@ int main(int argc, char* argv[]) {
   }
   
 
-  load();
+  load(&b);
+  print(&b);
   
 
   return 0;

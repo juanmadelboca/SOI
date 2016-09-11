@@ -15,20 +15,19 @@ struct base
 	
 };
 
-void load(){
+void load(base *b){
 	openFile("/proc/cpuinfo");
-	printf("%s",search("vendor_id"));
+	b->cpuType=search("vendor_id");
 	rewind(Fd);
-	printf("%s",search("model name"));
+	b->cpuModel= search("model name");
 	fclose(Fd);
-
 	openFile("/proc/version");
-	printf("%s",search("version"));
+	b->kernel= search("version");
 	fclose(Fd);
 
-	openFile("/proc/uptime");
-	printf("%s",upTime(search(".")));
-	fclose(Fd);
+	// openFile("/proc/uptime");
+	// printf("%s",upTime(search(".")));
+	// fclose(Fd);
 
 }
 
@@ -88,13 +87,17 @@ char* search(const char searchedWord[]) {
 
           if (tmp1 == strlen(searchedWord))
           {
-          	char* token = strtok(text, searchedWord);
-			while (token) {
-    			
-    			token = strtok(NULL, "");
-    			printf("token: %s\n", token);
-			}	
-            return text;
+          	if (!strcmp(searchedWord,"version"))
+          	{
+          		char* token = strtok(text, " ");
+				token= strtok(NULL, "");
+    			return token;
+          	} else{
+          		char* token = strtok(text, ":");
+				token= strtok(NULL, "");
+    			return token;
+          	}
+          	
           }
         }
      }
@@ -102,6 +105,12 @@ char* search(const char searchedWord[]) {
 
   }
 
+}
+
+void print(base *b){
+	printf("Tipo CPU : %s\n", b->cpuType);
+	printf("Modelo CPU : %s\n", b->cpuModel);
+	printf("Kernel : %s\n", b->kernel);
 }
 
 
