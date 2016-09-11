@@ -5,5 +5,6 @@
 FILE *Fd;
 void openFile(const char[]);
 char* search(const char[]);
-char * upTime(char[]);
+char* upTime(char[]);
 void load();
+void print();

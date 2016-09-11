@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
       interval = atoi(optarg+strlen(optarg)+1);
       printf("%s %d \n", " otro parametro ", interval);
       break;
-    case 's':
+    case 's':   
       printf("ksamp con agregado \n");
       break;
 
@@ -25,10 +25,12 @@ int main(int argc, char* argv[]) {
     }
   }
   
-
+  while(1){
   load(&b);
+  for (int i = 0; i < 30000000; ++i);
+  system("clear");
   print(&b);
-  
+  }
 
   return 0;
 }
