@@ -12,6 +12,11 @@ struct base
 	char upTime[60];
 	int fileSystems;
 
+  int processes;
+  int context;
+  char idleTime[60];
+
+
 	
 };
 
@@ -29,10 +34,19 @@ void load(base *b){
 
 	 openFile("/proc/uptime");
 	 strcpy(b->upTime,upTime(search(".")));
+   rewind(Fd);
+   strcpy(b->idleTime,upTime(strtok(search(".")," ")));   //vuelve a tomar el uptime en vez del idle jugar con el strtok
 	 fclose(Fd);
+
    openFile("/proc/filesystems");
    b->fileSystems=fileSystem();
    fclose(Fd);
+
+   /*openFile("/proc/stat");                  //deberia andar hay un problema cuando intenta abrir el archivo stat ¬¬
+   sscanf(search(" "),"%d",&b->processes);
+   rewind(Fd);
+   sscanf(search(" "),"%d",&b->context);
+   fclose(Fd);*/
 }
 
 void openFile(const char path[]) {
@@ -40,7 +54,7 @@ void openFile(const char path[]) {
 	if (Fd == NULL) {
 		printf("Error abriendo el fichero");
 	} else {
-    // printf("Fichero abierto \n");
+     //printf("Fichero abierto \n");
 	}
 }
 
@@ -103,9 +117,8 @@ char* search(const char searchedWord[]) {
           if (tmp1 == strlen(searchedWord))
           {
           	if (!strcmp(searchedWord,".")||!strcmp(searchedWord,"version")){
-          		token = strtok(text, " ");
-				      token= strtok(NULL, "");
-    			  return token;
+          		
+    			  return text;
           	}else{
           		token = strtok(text, ":");
 				      token= strtok(NULL, "");
@@ -127,6 +140,9 @@ void print(base *b){
 	printf("Kernel : %sc \n", b->kernel); //agrego una c aca porque cuando recorto justo en el espacio aparecen caracteres raros
   printf("UpTime : %s",b->upTime );
   printf("Cantidad de FS : %d\n",b->fileSystems );
+  //printf("Procesos : %d\n",b->processes );
+  //printf("Cambios de contexto : %d\n",b->context );
+  printf("IdleTime : %s",b->idleTime );
 }
 
 
