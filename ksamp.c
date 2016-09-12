@@ -26,10 +26,10 @@ int main(int argc, char* argv[]) {
   }
   
   while(1){
-  load(&b);
+  b.load();
   for (int i = 0; i < 30000000; ++i);
   system("clear");
-  print(&b);
+  b.print();
   }
 
   return 0;
