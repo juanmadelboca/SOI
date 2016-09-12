@@ -3,7 +3,6 @@
 int main(int argc, char* argv[]) {
 
   struct base b;
- 
 
   int option = 0;
   int interval;
@@ -13,10 +12,10 @@ int main(int argc, char* argv[]) {
     case 'l':
       interval = atoi(optarg); //me trae el primer parametro
       printf("%s %d \n", "ksamp pro con parametros", interval);
-      interval = atoi(optarg+strlen(optarg)+1);
+      interval = atoi(optarg + strlen(optarg) + 1);
       printf("%s %d \n", " otro parametro ", interval);
       break;
-    case 's':   
+    case 's':
       printf("ksamp con agregado \n");
       break;
 
@@ -24,15 +23,13 @@ int main(int argc, char* argv[]) {
       printf("comando erroneo \n");
     }
   }
-  
-  while(1){
-  b.load();
-  for (int i = 0; i < 30000000; ++i);
-  system("clear");
-  b.print();
-  }
 
+  while (1) {
+    b.load();
+    for (int i = 0; i < 30000000; ++i);
+    system("clear");
+    b.print();
+  }
   return 0;
 }
-
 
