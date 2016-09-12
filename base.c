@@ -21,6 +21,8 @@ struct base
 };
 
 void load(base *b){
+  char temporal[150];
+
   openFile("/proc/cpuinfo");
   search("vendor_id");
   strcpy(b->cpuType,search("vendor_id"));
@@ -29,24 +31,31 @@ void load(base *b){
   fclose(Fd);
 
 	openFile("/proc/version");
-	strncpy(b->kernel,search("version")+8,15);
+	strncpy(b->kernel,search("version")+13,17);  //tira unos caracteres raros
 	fclose(Fd); 
 
 	 openFile("/proc/uptime");
 	 strcpy(b->upTime,upTime(search(".")));
    rewind(Fd);
-   strcpy(b->idleTime,upTime(strtok(search(".")," ")));   //vuelve a tomar el uptime en vez del idle jugar con el strtok
+   strcpy(temporal,strtok(search(".")," "));
+   strcpy(temporal,strtok( NULL, " " ));
+   strcpy(b->idleTime,upTime(temporal));   
 	 fclose(Fd);
 
    openFile("/proc/filesystems");
    b->fileSystems=fileSystem();
    fclose(Fd);
-
-   /*openFile("/proc/stat");                  //deberia andar hay un problema cuando intenta abrir el archivo stat ¬¬
-   sscanf(search(" "),"%d",&b->processes);
+   //////////////////////////////////////////////////////////////
+   // DE ACA PARA ABAJO ME COMPLIQUE UN TOQUE ASI QUE SI 
+   // SE TE OCURRE ALGO MAS FACIL META MANO NOMAS
+   /////////////////////////////////////////////////////////////
+   openFile("/proc/stat");
+   strncpy(temporal,search("processes")+10,15);
+   sscanf(temporal,"%d",&b->processes);
    rewind(Fd);
-   sscanf(search(" "),"%d",&b->context);
-   fclose(Fd);*/
+   strncpy(temporal,search("ctxt")+5,15);
+   sscanf(temporal,"%d",&b->context);
+   fclose(Fd);
 }
 
 void openFile(const char path[]) {
@@ -116,9 +125,8 @@ char* search(const char searchedWord[]) {
 
           if (tmp1 == strlen(searchedWord))
           {
-          	if (!strcmp(searchedWord,".")||!strcmp(searchedWord,"version")){
-          		
-    			  return text;
+          	if (!strcmp(searchedWord,".")||!strcmp(searchedWord,"version")||!strcmp(searchedWord,"processes")||!strcmp(searchedWord,"ctxt")){
+          		return text;
           	}else{
           		token = strtok(text, ":");
 				      token= strtok(NULL, "");
@@ -137,11 +145,12 @@ char* search(const char searchedWord[]) {
 void print(base *b){
 	printf("Tipo CPU : %s", b->cpuType);
 	printf("Modelo CPU : %s", b->cpuModel);
-	printf("Kernel : %sc \n", b->kernel); //agrego una c aca porque cuando recorto justo en el espacio aparecen caracteres raros
+	printf("Kernel : %s \n", b->kernel); 
   printf("UpTime : %s",b->upTime );
   printf("Cantidad de FS : %d\n",b->fileSystems );
-  //printf("Procesos : %d\n",b->processes );
-  //printf("Cambios de contexto : %d\n",b->context );
+  printf("%s\n","///////////////////PUNTO C/////////////////////////" );
+  printf("Procesos : %d\n",b->processes );
+  printf("Cambios de contexto : %d\n",b->context );
   printf("IdleTime : %s",b->idleTime );
 }
 
