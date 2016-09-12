@@ -1,7 +1,7 @@
 #include "base.h"
 
-void fload(struct base *b);
-void fprint(struct base *b);
+void fload(struct base *b, int opt);
+void fprint(struct base *b, int opt);
 
 struct base {
 	char cpuType[20];
@@ -14,59 +14,66 @@ struct base {
 	int context;
 	char idleTime[60];
 
-	void (*pload)(struct base *);
-	void (*pprint)(struct base *);
+	void (*pload)(struct base *,int);
+	void (*pprint)(struct base *,int);
 	base() {
 		pload = fload;
 		pprint = fprint;
 	}
-	void load() {
-		pload(this);
+	void load(int opt) {
+		pload(this, opt);
 	}
-	void print() {
-		pprint(this);
+	void print(int opt) {
+		pprint(this, opt);
 	}
 };
 
-void fload(struct base *b) {
+void fload(struct base *b, int opt) {
 	char temporal[150];
 	char *p;
 
-	openFile("/proc/cpuinfo");
-	search("vendor_id");
-	strcpy(b->cpuType, search("vendor_id"));
-	rewind(Fd);
-	strcpy(b->cpuModel, search("model name"));
-	fclose(Fd);
+	switch(opt){
+		case 2:
+		case 1:
+		case 0:
+			openFile("/proc/cpuinfo");
+			search("vendor_id");
+			strcpy(b->cpuType, search("vendor_id"));
+			rewind(Fd);
+			strcpy(b->cpuModel, search("model name"));
+			fclose(Fd);
 
-	openFile("/proc/version");
-	strcpy(b->kernel, search("version") + 13);  //tira unos caracteres raros
-	p = strchr(b->kernel + 1, ' ');
-	*p = '\0';
-	fclose(Fd);
+			openFile("/proc/version");
+			strcpy(b->kernel, search("version") + 13);  //tira unos caracteres raros
+			p = strchr(b->kernel + 1, ' ');
+			*p = '\0';
+			fclose(Fd);
 
-	openFile("/proc/uptime");
-	strcpy(b->upTime, upTime(search(".")));
-	rewind(Fd);
-	strcpy(temporal, strtok(search("."), " "));
-	strcpy(temporal, strtok(NULL, " "));
-	strcpy(b->idleTime, upTime(temporal));
-	fclose(Fd);
+			openFile("/proc/uptime");
+			strcpy(b->upTime, upTime(search(".")));
+			rewind(Fd);
+			strcpy(temporal, strtok(search("."), " "));
+			strcpy(temporal, strtok(NULL, " "));
+			strcpy(b->idleTime, upTime(temporal));
+			fclose(Fd);
 
-	openFile("/proc/filesystems");
-	b->fileSystems = fileSystem();
-	fclose(Fd);
-	//////////////////////////////////////////////////////////////
-	// DE ACA PARA ABAJO ME COMPLIQUE UN TOQUE ASI QUE SI 
-	// SE TE OCURRE ALGO MAS FACIL META MANO NOMAS
-	/////////////////////////////////////////////////////////////
-	openFile("/proc/stat");
-	strncpy(temporal, search("processes") + 10, 15);
-	sscanf(temporal, "%d", &b->processes);
-	rewind(Fd);
-	strncpy(temporal, search("ctxt") + 5, 15);
-	sscanf(temporal, "%d", &b->context);
-	fclose(Fd);
+			openFile("/proc/filesystems");
+			b->fileSystems = fileSystem();
+			fclose(Fd);
+			//////////////////////////////////////////////////////////////
+			// DE ACA PARA ABAJO ME COMPLIQUE UN TOQUE ASI QUE SI 
+			// SE TE OCURRE ALGO MAS FACIL META MANO NOMAS
+			/////////////////////////////////////////////////////////////
+			openFile("/proc/stat");
+			strncpy(temporal, search("processes") + 10, 15);
+			sscanf(temporal, "%d", &b->processes);
+			rewind(Fd);
+			strncpy(temporal, search("ctxt") + 5, 15);
+			sscanf(temporal, "%d", &b->context);
+			fclose(Fd);
+			break;
+	}
+
 }
 
 void openFile(const char path[]) {
@@ -150,15 +157,21 @@ char* search(const char searchedWord[]) {
 
 }
 
-void fprint(struct base *b) {
+void fprint(struct base *b, int opt) {
 	printf("Tipo CPU : %s", b->cpuType);
 	printf("Modelo CPU : %s", b->cpuModel);
 	printf("Kernel : %s \n", b->kernel);
 	printf("UpTime : %s", b->upTime);
 	printf("Cantidad de FS : %d\n", b->fileSystems);
-	printf("%s\n", "///////////////////PUNTO C/////////////////////////");
 	printf("Procesos : %d\n", b->processes);
 	printf("Cambios de contexto : %d\n", b->context);
 	printf("IdleTime : %s", b->idleTime);
+	if (opt>0){
+		printf("\n--------- Imprimo opcion S --------\n");
+		if (opt==2){
+			printf("\n--------- Imprimo opcion L --------\n");
+		}
+	}
+	
 }
 
