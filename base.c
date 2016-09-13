@@ -13,6 +13,11 @@ struct base {
 	int processes;
 	int context;
 	char idleTime[60];
+	char userCpuTime[60];
+	char systemCpuTime[60];
+
+	int totalMemory;
+	int	freeMemory;
 
 	void (*pload)(struct base *,int);
 	void (*pprint)(struct base *,int);
@@ -44,7 +49,7 @@ void fload(struct base *b, int opt) {
 			fclose(Fd);
 
 			openFile("/proc/version");
-			strcpy(b->kernel, search("version") + 13);  //tira unos caracteres raros
+			strcpy(b->kernel, search("version") + 13);
 			p = strchr(b->kernel + 1, ' ');
 			*p = '\0';
 			fclose(Fd);
@@ -60,16 +65,26 @@ void fload(struct base *b, int opt) {
 			openFile("/proc/filesystems");
 			b->fileSystems = fileSystem();
 			fclose(Fd);
-			//////////////////////////////////////////////////////////////
-			// DE ACA PARA ABAJO ME COMPLIQUE UN TOQUE ASI QUE SI 
-			// SE TE OCURRE ALGO MAS FACIL META MANO NOMAS
-			/////////////////////////////////////////////////////////////
+
 			openFile("/proc/stat");
 			strncpy(temporal, search("processes") + 10, 15);
 			sscanf(temporal, "%d", &b->processes);
 			rewind(Fd);
 			strncpy(temporal, search("ctxt") + 5, 15);
 			sscanf(temporal, "%d", &b->context);
+			rewind(Fd);			
+			strcpy(temporal, strtok(search("cpu"), " "));		//devuelve en Jiffies (WTF) clicks de clock
+			strcpy(temporal, strtok(NULL, " "));				//hay que dividir por 100 aprox
+			strcpy(b->userCpuTime, upTime(temporal));
+			strcpy(temporal, strtok(NULL, " "));
+			strcpy(temporal, strtok(NULL, " "));
+			strcpy(b->systemCpuTime,upTime(temporal));
+			fclose(Fd);
+
+			openFile("/proc/meminfo");
+			sscanf(search("MemTotal"), "%d", &b->totalMemory);
+			rewind(Fd);
+			sscanf(search("MemFree"), "%d", &b->freeMemory);
 			fclose(Fd);
 			break;
 	}
@@ -105,7 +120,7 @@ int fileSystem() {
 	char text[150];
 	while (feof(Fd) == 0) {
 
-		fgets(text, 150, Fd); //lee una linea de el archivo
+		fgets(text, 150, Fd); 
 		files++;
 	}
 	return files;
@@ -138,6 +153,7 @@ char* search(const char searchedWord[]) {
 
 					if (tmp1 == strlen(searchedWord)) {
 						if (!strcmp(searchedWord, ".")
+								|| !strcmp(searchedWord, "cpu")
 								|| !strcmp(searchedWord, "version")
 								|| !strcmp(searchedWord, "processes")
 								|| !strcmp(searchedWord, "ctxt")) {
@@ -166,6 +182,11 @@ void fprint(struct base *b, int opt) {
 	printf("Procesos : %d\n", b->processes);
 	printf("Cambios de contexto : %d\n", b->context);
 	printf("IdleTime : %s", b->idleTime);
+
+	printf("User CPU Time : %s", b->userCpuTime);
+	printf("System CPU Time : %s", b->systemCpuTime);
+
+	printf("Memoria disponible / total: %d / %d\n",b->freeMemory,b->totalMemory );
 	if (opt>0){
 		printf("\n--------- Imprimo opcion S --------\n");
 		if (opt==2){
