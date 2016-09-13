@@ -18,6 +18,7 @@ struct base {
 
 	int totalMemory;
 	int	freeMemory;
+	float loadAvg;
 
 	void (*pload)(struct base *,int);
 	void (*pprint)(struct base *,int);
@@ -86,6 +87,10 @@ void fload(struct base *b, int opt) {
 			rewind(Fd);
 			sscanf(search("MemFree"), "%d", &b->freeMemory);
 			fclose(Fd);
+
+			openFile("/proc/loadavg");
+			sscanf(search(" "), "%f", &b->loadAvg);
+			fclose(Fd);
 			break;
 	}
 
@@ -153,6 +158,7 @@ char* search(const char searchedWord[]) {
 
 					if (tmp1 == strlen(searchedWord)) {
 						if (!strcmp(searchedWord, ".")
+								|| !strcmp(searchedWord, " ")
 								|| !strcmp(searchedWord, "cpu")
 								|| !strcmp(searchedWord, "version")
 								|| !strcmp(searchedWord, "processes")
@@ -187,6 +193,8 @@ void fprint(struct base *b, int opt) {
 	printf("System CPU Time : %s", b->systemCpuTime);
 
 	printf("Memoria disponible / total: %d / %d\n",b->freeMemory,b->totalMemory );
+	printf("Carga Promedio : %.2f \n", b->loadAvg);
+	
 	if (opt>0){
 		printf("\n--------- Imprimo opcion S --------\n");
 		if (opt==2){
