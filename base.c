@@ -43,7 +43,6 @@ void fload(struct base *b, int opt) {
 		case 1:
 		case 0:
 			openFile("/proc/cpuinfo");
-			search("vendor_id");
 			strcpy(b->cpuType, search("vendor_id"));
 			rewind(Fd);
 			strcpy(b->cpuModel, search("model name"));
