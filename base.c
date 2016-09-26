@@ -134,11 +134,14 @@ int fileSystem() {
 }
 
 char* getTime(){
+	static char timeText[100]
 	time_t timer;
   	struct tm * timeinfo;
 	time (&timer);
  	timeinfo = localtime (&timer);
- 	return asctime(timeinfo);
+ 	//return asctime(timeinfo);
+ 	 strftime(timeText,80,"%s ",timeinfo);
+ 	return timeText;
 
 }
 
