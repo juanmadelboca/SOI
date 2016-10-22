@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 
 int leerEntrada(char* argv[], char* command);
@@ -12,12 +13,18 @@ int main (){
 		int argC;	
 		char exit[6]="exit";
 		char* paths[20];
+		char hostname [20];
+    	char user[20];
 		int	pathCounter;
+
+		gethostname(hostname,20);
+    	cuserid(user);
 
 		pathCounter=getPaths(paths);
 	do
 	{
-		printf("%s\n",getenv("PATH") );
+		printf("%s@%s: ",user,hostname);
+		printf("%s> ",getenv("PATH") );
 		scanf("%s",command);
 		argC=leerEntrada(argV,command);
 	}while (strcmp(command,exit));
