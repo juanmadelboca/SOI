@@ -1,22 +1,25 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
 
 int leerEntrada(char* argv[], char* command);
+int getPaths(char* paths[]);
 
 int main (){
 		char command[20];
 		char* argV[20];
-		int argC;
+		int argC;	
 		char exit[6]="exit";
+		char* paths[20];
+		int	pathCounter;
+
+		pathCounter=getPaths(paths);
 	do
 	{
 		printf("%s\n",getenv("PATH") );
 		scanf("%s",command);
 		argC=leerEntrada(argV,command);
-		for (int i = 0; i < argC; ++i)
-		{
-		printf("%s \n",argV[i]);
-		}
 	}while (strcmp(command,exit));
 
 }
@@ -31,6 +34,21 @@ int leerEntrada(char* argv[], char* command){
 			break;
 	}
 	return words;
+}
+int getPaths(char* paths[]){
+	//acomoda los path del sistema en un arreglo de paths y devuelve la cantidad de paths
+	int pathCounter;
+	char* pathVar = getenv("PATH");
+	
+	paths[0] = strtok(pathVar, ":");
+	for(pathCounter = 1; pathCounter < 20; pathCounter++){
+		paths[pathCounter] = strtok(NULL,":");		
+		if (paths[pathCounter] == NULL)
+			break;
+	}
+	
+	strtok(NULL,":");
+	return pathCounter+1;
 }
 
 						
