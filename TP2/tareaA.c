@@ -28,7 +28,7 @@ int main (){
 	do
 	{
 		printf("%s%s@%s%s:",BOLDCYAN,user,hostname,RESET);
-		printf("%s~%s$ ",BLUE,getenv("PATH") );
+		printf("%s~%s$%s ",BLUE,getenv("PATH"),RESET );
 		scanf("%s",command);
 		argC=leerEntrada(argV,command);
 	}while (strcmp(command,exit));
