@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define BOLDBLUE    "\033[1m\033[34m"      /* Bold Blue */
+#define BOLDCYAN    "\033[1m\033[36m"
+#define BLUE    "\033[34m"      /* Blue */
+#define RESET   "\033[0m"
 
 int leerEntrada(char* argv[], char* command);
 int getPaths(char* paths[]);
@@ -23,8 +27,8 @@ int main (){
 		pathCounter=getPaths(paths);
 	do
 	{
-		printf("%s@%s: ",user,hostname);
-		printf("%s> ",getenv("PATH") );
+		printf("%s%s@%s%s:",BOLDCYAN,user,hostname,RESET);
+		printf("%s~%s$ ",BLUE,getenv("PATH") );
 		scanf("%s",command);
 		argC=leerEntrada(argV,command);
 	}while (strcmp(command,exit));
