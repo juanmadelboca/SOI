@@ -24,11 +24,15 @@ int main (){
 		gethostname(hostname,20);
     	cuserid(user);
 
+    	int a= chdir(getenv("HOME"));
+
+    	printf("%d\n",a );
+
 		pathCounter=getPaths(paths);
 	do
 	{
 		printf("%s%s@%s%s:",BOLDCYAN,user,hostname,RESET);
-		printf("%s~%s$%s ",BLUE,getenv("PATH"),RESET );
+		printf("%s~%s$%s ",BLUE,getcwd(NULL,50),RESET );
 		scanf("%s",command);
 		argC=leerEntrada(argV,command);
 	}while (strcmp(command,exit));
