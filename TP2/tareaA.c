@@ -17,12 +17,13 @@ int searchFile(char* path,int recursive);
 int main (){
 		char command[20];
 		char* argV[20];
-		int argC;	
+		int argC,pid;	
 		char exit[6]="exit";
 		char* paths[20];
 		char hostname [20];
     	char user[20];
 		int	pathCounter;
+    	char executepath[200];
 
 		gethostname(hostname,20);
     	cuserid(user);
@@ -38,6 +39,22 @@ int main (){
 		printf("%s~%s$%s ",BLUE,getcwd(NULL,50),RESET );
 		scanf("%s",command);
 		argC=leerEntrada(argV,command);
+
+		if(searchFile(executepath,1)){			//ver que se le pasa a search file,sino se encuentra no se ejecuta el if 
+
+				pid = fork();				//creo el nuevo proceso
+				if (pid<0) {				//si pid<0 da errror y termino el programa
+					perror("Error en la creacion del hijo");
+					return 1;
+				}
+				else if (pid == 0) {								//el hijo ejecuta esta sentencia el padre pasa de largo
+					execv(executepath, argV);						//execv ejecuta el binario con el nombre y opciones que trae argv y con el path que obtiene de search
+					printf("%s\n", "soy hijo y entre al nano" );
+		}
+
+					wait();		//el padre espera a los procesos hijos que crea para evitar que queden zombies
+					printf("%s\n", "termine" );
+	}
 	}while (strcmp(command,exit));
 
 }
@@ -122,4 +139,3 @@ int searchFile(char* path,int recursive){
   }
 	return 0;
 }
-						
