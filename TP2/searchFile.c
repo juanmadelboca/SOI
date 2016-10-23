@@ -5,41 +5,29 @@
 #include <unistd.h>
 #include <string.h>
 
-int searchFile(char* path, int recursive);
-int searchBin(char* path);
+int searchFile(char* path,char* arch, int recursive);
+int searchBin(char* path, char* arch);
 
 int main (void)
 {
-  char b[100]= "/home/franco/SOI/TP2/ls";
+  char path[100]= "/home";
+  char arch[50]= "tareaA";
   
 
-  if (searchFile(b,1)){
-    printf("La encontre en: %s\n",b );
-  } else if (searchBin(b)){
-    printf("La encontre en: %s\n", b);
+  if (searchFile(path,arch,1)){
+    printf("La encontre en: %s\n",path );
+  } else if (searchBin(path,arch)){
+    printf("La encontre en: %s\n", path);
   } else
   printf("No la encontre");
-
-
-
-
 
 
   return 0;
 }
 
-int searchFile(char* path,int recursive){
+
+int searchFile(char* path,char* arch,int recursive){
   DIR * pDir;
-  char* arch;
-  char auxPath[50];
-
-  arch = strchr(path, '\0');              //Con este algoritmo obtengo el nombre
-  while (*arch != '/')                    //del archivo al que quiero acceder
-    arch--;                               //y obtengo la ruta por otro lado.
-  *arch= '\0';
-  arch++;
-  strcpy(auxPath,arch);
-
   pDir = opendir (path);
 
   if (! pDir) {
@@ -60,9 +48,7 @@ int searchFile(char* path,int recursive){
             && strchr(file->d_name,'.')==NULL){        //Si esta habilitada la busqueda recursiva, busco en otras carpetas
         strcat(path,"/");
         strcat(path,file->d_name);
-        strcat(path,"/");
-        strcat(path,auxPath);
-        if (searchFile(path,recursive)){                 // Si lo encontro, retorno 1
+        if (searchFile(path,arch,recursive)){                 // Si lo encontro, retorno 1
           return 1;
         } else {                                      //Sino, elimino la carpeta que agregue, y vuelvo a buscar
           char* p = strchr(path, '\0');             
@@ -72,25 +58,14 @@ int searchFile(char* path,int recursive){
         }   
       }
   }
-  strcat(path,"/");
-  strcat(path,auxPath);
-
   return 0;
 }
 
-int searchBin(char* path){
-  char bin[50]="/bin/";
-  char* arch;
-
-  arch = strchr(path, '\0');              //Con este algoritmo obtengo el nombre
-  while (*arch != '/')                    //del archivo al que quiero acceder
-    arch--;                               //y obtengo la ruta por otro lado.
-  *arch= '\0';
-  arch++;
+int searchBin(char* path,char* arch){
+  char bin[50]="/bin";
   strcpy(path,bin);
-  strcat(path,arch);
 
-  if (searchFile(path,0)){
+  if (searchFile(path,arch,0)){
     return 1;
   }
   return 0;
