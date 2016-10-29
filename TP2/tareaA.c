@@ -25,20 +25,19 @@ int main (){
 	char exit[6]="exit";
 	char* paths[20];
 	char hostname [20];
-  char user[20];
-  char executepath[200];
-  char path[200];
-
-  strcpy(path,getenv("HOME"));
+	char user[20];
+	char executepath[200];
+	char path[200];
+	strcpy(path,getenv("HOME"));
 	gethostname(hostname,20);
-  cuserid(user);
-  chdir(path);
+	cuserid(user);
+	chdir(path);
 
 	do
 	{
 		printf("%s%s@%s%s:",BOLDCYAN,user,hostname,RESET);
 		printf("%s~%s$%s ",BLUE,getcwd(NULL,50),RESET );
-    gets(command);
+		fgets(command,MAXCOM,stdin);
 		argC=readCommand(argV,command);
 
 		strcpy(executepath,argV[0]);
@@ -71,19 +70,11 @@ int main (){
  * @return Numero de palabras de command.
  */
 int readCommand(char* argv[], char* command){
-  int words = 0;
-  char *p;
-  argv[words]= command;
-  words++;
-  p= strchr(command,' ');
-
-  while(p!=NULL){
-    *p= '\0';
-    p++;
-    argv[words]= p;
-    words++;
-    p= strchr(p,' ');
-    if (words==MAXARG)
+  int words = 0;  
+  argv[0] = strtok(command, " \n");
+  for(words = 1; words < 20; words++){
+ 	argv[words] = strtok(NULL , " \n");
+    if (argv[words] == NULL)
       break;
   }
   return words;
