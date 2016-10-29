@@ -9,45 +9,43 @@
 #define BOLDCYAN    "\033[1m\033[36m"
 #define BLUE    "\033[34m"      /* Blue */
 #define RESET   "\033[0m"
+#define MAXARG 20
+#define MAXCOM 100
 
-int leerEntrada(char* argv[], char* command);
+int readCommand(char* argv[], char* command);
 int searchFile(char* path,char* arch, int recursive);
 int searchBin(char* path, char* arch);
 int checkCommand(char* command);
 
 int main (){
-		char command[20];
-		char* argV[20];
-		int argC,pid;	
-		char exit[6]="exit";
-		char* paths[20];
-		char hostname [20];
-    	char user[20];
-    	char executepath[200];
-    	char path[200];
 
-    	strcpy(path,getenv("HOME"));
-		gethostname(hostname,20);
-    	cuserid(user);
+	char command[MAXCOM];
+	char* argV[MAXARG];
+	int argC,pid;	
+	char exit[6]="exit";
+	char* paths[20];
+	char hostname [20];
+  char user[20];
+  char executepath[200];
+  char path[200];
 
-    	chdir(path);
+  strcpy(path,getenv("HOME"));
+	gethostname(hostname,20);
+  cuserid(user);
+  chdir(path);
 
 	do
 	{
 		printf("%s%s@%s%s:",BOLDCYAN,user,hostname,RESET);
 		printf("%s~%s$%s ",BLUE,getcwd(NULL,50),RESET );
-		scanf("%s",command);
-		argC=leerEntrada(argV,command);
+    gets(command);
+		argC=readCommand(argV,command);
+
 		strcpy(executepath,argV[0]);
-
-		/*if (!strcmp(argV[0],"cd")){			No anda porque lo que hay en argV[1] son punteros a null
-			strcat(path,"/");
-			strcat(path,argV[1]);
-			printf("Me voy a= %s\n",path );
+    if (!strcmp(argV[0],"cd")){			
+			strcpy(path,argV[1]);
 			chdir(path);
-		} else */
-
-		if(checkCommand(executepath)){			//ver que se le pasa a search file,sino se encuentra no se ejecuta el if 
+		} else if(checkCommand(executepath)){			//ver que se le pasa a search file,sino se encuentra no se ejecuta el if 
 
 			pid = fork();				//creo el nuevo proceso
 			if (pid<0) {				//si pid<0 da errror y termino el programa
@@ -66,16 +64,29 @@ int main (){
 
 }
 
-int leerEntrada(char* argv[], char* command){
+/**
+ * Lee el comando ingresado (command), lo carga en argv[] y devuelve el número de palabras del mismo.
+ * @param char* command Comando a procesar.
+  * @param char* argv[] Array de palabras de command.
+ * @return Numero de palabras de command.
+ */
+int readCommand(char* argv[], char* command){
+  int words = 0;
+  char *p;
+  argv[words]= command;
+  words++;
+  p= strchr(command,' ');
 
-	int words = 0;	
-	argv[0] = strtok(command, " \n");
-	for(words = 1; words < 20; words++){
-		argv[words] = strtok(NULL , " \n");
-		if (argv[words] == NULL)
-			break;
-	}
-	return words;
+  while(p!=NULL){
+    *p= '\0';
+    p++;
+    argv[words]= p;
+    words++;
+    p= strchr(p,' ');
+    if (words==MAXARG)
+      break;
+  }
+  return words;
 }
 /**
  * Chequea la validez del comando, si es valido, realiza la acción, sino imprime error.
@@ -150,7 +161,7 @@ int searchFile(char* path,char* arch,int recursive){
       file = readdir (pDir);
       if (! file){
           break;
-      }else if(!strcmp(file->d_name,arch)){             //Chequeo si esta en esa carpeta
+      }else if(!strcmp(file->d_name,arch)&&file->d_type != DT_DIR){             //Chequeo si esta en esa carpeta
         strcat(path,"/");
         strcat(path,file->d_name);
         return 1;
