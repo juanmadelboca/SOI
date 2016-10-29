@@ -32,15 +32,16 @@ int main (){
 	gethostname(hostname,20);
 	cuserid(user);
 	chdir(path);
+	
 
 	do
 	{
-		printf("%s%s@%s%s:",BOLDCYAN,user,hostname,RESET);
+		printf("\n%s%s@%s%s:",BOLDCYAN,user,hostname,RESET);
 		printf("%s~%s$%s ",BLUE,getcwd(NULL,50),RESET );
 		fgets(command,MAXCOM,stdin);
 		argC=readCommand(argV,command);
-
 		strcpy(executepath,argV[0]);
+
     if (!strcmp(argV[0],"cd")){			
 			strcpy(path,argV[1]);
 			chdir(path);
@@ -55,9 +56,11 @@ int main (){
 				execv(executepath, argV);						//execv ejecuta el binario con el nombre y opciones que trae argv y con el path que obtiene de search
 				printf("%s\n", "soy hijo y entre al nano" );
 			}
+			
+			if(strcmp(argV[argC-1],"&"))
+				wait();
 
-				wait();		//el padre espera a los procesos hijos que crea para evitar que queden zombies
-				printf("%s\n", "termine" );
+			printf("%s\n", "termine" );
 		}
 	}while (strcmp(command,exit));
 
@@ -143,7 +146,7 @@ int searchFile(char* path,char* arch,int recursive){
   pDir = opendir (path);
 
   if (! pDir) {
-      printf ("ERROR: No existe el directorio %s\n",path);
+      //printf ("ERROR: No existe el directorio %s\n",path);
       return 0;
   }
 
@@ -174,18 +177,23 @@ int searchFile(char* path,char* arch,int recursive){
 }
 
 /**
- * Busca el archivo dentro de la carpeta /bin, y redirecciona el puntero path a la dirección del archivo.
+ * Busca el archivo dentro de PATH, y redirecciona el puntero path a la dirección del archivo.
  * @param char* path Ruta a redireccionar. Ej "/home" --> "/bin/date"
  * @param char* arch Nombre el archivo a buscar
  * @return Devuelve 1 si encontro el archivo y un 0 si no lo encontro.
  */
 
 int searchBin(char* path,char* arch){
-  char bin[50]="/bin";
-  strcpy(path,bin);
-
-  if (searchFile(path,arch,0)){
-    return 1;
+  char *bin;
+  char paths[200];
+  sscanf(getenv("PATH"),"%200s",paths);
+  bin= strtok(paths,":");
+  while (bin!=NULL){
+  	strcpy(path,bin);
+  	if (searchFile(path,arch,0)){
+  		return 1;
+    }
+    bin= strtok(NULL, ":");
   }
   return 0;
 }
