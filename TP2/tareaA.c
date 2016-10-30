@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <sys/wait.h>
+
 
 #define BOLDBLUE    "\033[1m\033[34m"      /* Bold Blue */
 #define BOLDCYAN    "\033[1m\033[36m"
@@ -11,6 +13,8 @@
 #define RESET   "\033[0m"
 #define MAXARG 20
 #define MAXCOM 100
+
+extern char *cuserid(char *);
 
 int readCommand(char* argv[], char* command);
 int searchFile(char* path,char* arch, int recursive);
@@ -21,7 +25,7 @@ int main (){
 
 	char command[MAXCOM];
 	char* argV[MAXARG];
-	int argC,pid;	
+	int argC,waitF,pid;
 	char exit[6]="exit";
 	char* paths[20];
 	char hostname [20];
@@ -32,6 +36,7 @@ int main (){
 	gethostname(hostname,20);
 	cuserid(user);
 	chdir(path);
+	waitF=1;
 	
 
 	do
@@ -40,7 +45,16 @@ int main (){
 		printf("%s~%s$%s ",BLUE,getcwd(NULL,50),RESET );
 		fgets(command,MAXCOM,stdin);
 		argC=readCommand(argV,command);
+		if (argC==0)
+			continue;
 		strcpy(executepath,argV[0]);
+
+
+		if(!strcmp(argV[argC-1],"&")){
+			argV[argC-1]=NULL;
+			waitF=0;
+		} else
+			waitF=1;
 
     if (!strcmp(argV[0],"cd")){			
 			strcpy(path,argV[1]);
@@ -54,17 +68,19 @@ int main (){
 			}
 			else if (pid == 0) {								//el hijo ejecuta esta sentencia el padre pasa de largo
 				execv(executepath, argV);						//execv ejecuta el binario con el nombre y opciones que trae argv y con el path que obtiene de search
-				printf("%s\n", "soy hijo y entre al nano" );
 			}
 			
-			if(strcmp(argV[argC-1],"&"))
-				wait();
+			if (waitF)
+				waitpid(pid,NULL,0);
 
-			printf("%s\n", "termine" );
+			//printf("%s\n", "termine" );
 		}
 	}while (strcmp(command,exit));
 
+	return 0;
+
 }
+
 
 /**
  * Lee el comando ingresado (command), lo carga en argv[] y devuelve el número de palabras del mismo.
@@ -73,8 +89,9 @@ int main (){
  * @return Numero de palabras de command.
  */
 int readCommand(char* argv[], char* command){
-  int words = 0;  
+  int words = 0;
   argv[0] = strtok(command, " \n");
+  if (argv[0]!=NULL)
   for(words = 1; words < 20; words++){
  	argv[words] = strtok(NULL , " \n");
     if (argv[words] == NULL)
