@@ -16,7 +16,7 @@
 
 extern char *cuserid(char *);
 
-int readCommand(char* argv[], char* command);
+int readCommand(char* argv[][MAXARG], char* command,int argc[]);
 int searchFile(char* path,char* arch, int recursive);
 int searchBin(char* path, char* arch);
 int checkCommand(char* command);
@@ -24,19 +24,22 @@ int checkCommand(char* command);
 int main (){
 
 	char command[MAXCOM];
-	char* argV[MAXARG];
-	int argC,waitF,pid;
-	char exit[6]="exit";
+	char* argV[2][MAXARG];
+	int argC[2];
+	int fd[2];
+	int waitF,pid;
 	char* paths[20];
 	char hostname [20];
 	char user[20];
 	char executepath[200];
+	char executepath2[200];
 	char path[200];
 	strcpy(path,getenv("HOME"));
 	gethostname(hostname,20);
 	cuserid(user);
 	chdir(path);
 	waitF=1;
+	pipe(fd);
 	
 
 	do
@@ -44,60 +47,114 @@ int main (){
 		printf("\n%s%s@%s%s:",BOLDCYAN,user,hostname,RESET);
 		printf("%s~%s$%s ",BLUE,getcwd(NULL,50),RESET );
 		fgets(command,MAXCOM,stdin);
-		argC=readCommand(argV,command);
-		if (argC==0)
-			continue;
-		strcpy(executepath,argV[0]);
+
+		if(!readCommand(argV,command,argC)){			// Chequeo si no se ingreso un pipe
+			if (argC[0]==0)
+				continue;
+			strcpy(executepath,argV[0][0]);
 
 
-		if(!strcmp(argV[argC-1],"&")){
-			argV[argC-1]=NULL;
-			waitF=0;
-		} else
-			waitF=1;
+			if(!strcmp(argV[0][argC[0]-1],"&")){
+				argV[0][argC[0]-1]=NULL;
+				waitF=0;
+			} else
+				waitF=1;
 
-    if (!strcmp(argV[0],"cd")){			
-			strcpy(path,argV[1]);
-			chdir(path);
-		} else if(checkCommand(executepath)){			//ver que se le pasa a search file,sino se encuentra no se ejecuta el if 
+	    	if (!strcmp(argV[0][0],"cd")){			
+				strcpy(path,argV[0][1]);
+				chdir(path);
+			} else if(checkCommand(executepath)){			//ver que se le pasa a search file,sino se encuentra no se ejecuta el if 
 
-			pid = fork();				//creo el nuevo proceso
-			if (pid<0) {				//si pid<0 da errror y termino el programa
-				perror("Error en la creacion del hijo");
-				return 1;
+				pid = fork();				//creo el nuevo proceso
+				if (pid<0) {				//si pid<0 da errror y termino el programa
+					perror("Error en la creacion del hijo");
+					return 1;
+				}
+				else if (pid == 0) {								//el hijo ejecuta esta sentencia el padre pasa de largo
+					execv(executepath, argV[0]);						//execv ejecuta el binario con el nombre y opciones que trae argv y con el path que obtiene de search
+				}
+				
+				if (waitF)
+					waitpid(pid,NULL,0);
 			}
-			else if (pid == 0) {								//el hijo ejecuta esta sentencia el padre pasa de largo
-				execv(executepath, argV);						//execv ejecuta el binario con el nombre y opciones que trae argv y con el path que obtiene de search
-			}
-			
-			if (waitF)
-				waitpid(pid,NULL,0);
+		} else {									// Si se ingreso un pipe, hago lo siguiente
 
-			//printf("%s\n", "termine" );
+			strcpy(executepath,argV[0][0]);
+			strcpy(executepath2,argV[1][0]);
+
+			if (((pid = fork()) != -1) && checkCommand(executepath)&& checkCommand(executepath2)) {
+				if(pid == 0){         
+				close(fd[0]);
+				close(1);
+				dup(fd[1]);
+				close(fd[1]);
+				execv(executepath, argV[0]); 
+
+				} else {             
+					wait(NULL);
+					if((pid= fork())>0)
+					{
+						if (pid==0){
+							dup2(fd[1],1);
+							close(fd[1]);
+							close(0);
+							dup(fd[0]);
+							close(fd[0]);
+							execv(executepath2, argV[1]); /* Here's stored the second instruction */
+						}
+						close(fd[1]);
+						char buffer[1024]="";
+						read(fd[0],buffer,sizeof(buffer));
+						printf("%s",buffer );
+					}
+					else printf("ERROR: No se pudo crear el hijo" );
+				}
+				
+			} else printf("ERROR: No se pudo ejecutar el pipe \n");	
 		}
-	}while (strcmp(command,exit));
+
+	}while (strcmp(command,"exit"));
 
 	return 0;
 
 }
 
 
+
 /**
- * Lee el comando ingresado (command), lo carga en argv[] y devuelve el número de palabras del mismo.
+ * Lee el comando ingresado (command), y lo carga en argv[][], si no recibe el caracter de pipe '|' guarda
+ * todos los comandos en la fila 0, sino, guarda los comandos luego del pipe en la fila 1.
  * @param char* command Comando a procesar.
-  * @param char* argv[] Array de palabras de command.
- * @return Numero de palabras de command.
+ * @param char* argv[][] Array de palabras de command.
+ * @param int argc[] numero de palabras
+ * @return retorna un 1 si recibe un pipe y un 0 si no lo recibe.
  */
-int readCommand(char* argv[], char* command){
-  int words = 0;
-  argv[0] = strtok(command, " \n");
-  if (argv[0]!=NULL)
+int readCommand(char* argv[][MAXARG], char* command,int argc[]){
+  int words=0;
+  int row=0;
+  argv[row][words] = strtok(command, " \n");
+  if (argv[row][words]!=NULL)
   for(words = 1; words < 20; words++){
- 	argv[words] = strtok(NULL , " \n");
-    if (argv[words] == NULL)
+    argv[row][words] = strtok(NULL , " \n");
+    if (argv[row][words] == NULL)
       break;
+    else if (!strcmp(argv[row][words],"|")){
+      if (row){
+        printf("Error: No se acepta mas de 1 pipe");
+        exit(1);
+      }
+      argv[row][words]= NULL;
+      row=1;
+      argc[0]= words;
+      words=-1;
+    } 
   }
-  return words;
+  if (row)
+    argc[1]=words;
+  else 
+    argc[0]=words;
+
+  return row;
 }
 /**
  * Chequea la validez del comando, si es valido, realiza la acción, sino imprime error.
