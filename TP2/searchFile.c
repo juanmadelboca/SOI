@@ -10,8 +10,8 @@ int searchBin(char* path, char* arch);
 
 int main (void)
 {
-  char path[100]= "/home";
-  char arch[50]= "tareaA";
+  char path[200]= "/home";
+  char arch[50]= "acatoy";
   
 
   if (searchFile(path,arch,1)){
@@ -31,7 +31,7 @@ int searchFile(char* path,char* arch,int recursive){
   pDir = opendir (path);
 
   if (! pDir) {
-      printf ("ERROR: No existe el directorio %s",path);
+      printf ("ERROR: No existe el directorio %s\n",path);
       return 0;
   }
 

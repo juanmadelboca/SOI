@@ -1,3 +1,5 @@
+all: clean
+
 ksamp: ksamp.o base.o 
 	cc -o ksamp ksamp.o
 
@@ -8,5 +10,5 @@ base.o: base.c base.h
 	cc -c -pedantic -Wall base.c
 
 clean: 
-	rm ksamp base.o ksamp.o
+	rm -f base.o ksamp.o
 

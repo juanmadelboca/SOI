@@ -8,7 +8,7 @@ struct base {
 	char kernel[150];
 	char upTime[60];
 	int fileSystems;
-	char time[26];
+	char time[50];
 
 	int processes;
 	int context;
@@ -134,14 +134,13 @@ int fileSystem() {
 }
 
 char* getTime(){
-	static char timeText[100]
 	time_t timer;
   	struct tm * timeinfo;
 	time (&timer);
  	timeinfo = localtime (&timer);
- 	//return asctime(timeinfo);
- 	 strftime(timeText,80,"%s ",timeinfo);
- 	return timeText;
+ 	return asctime(timeinfo);
+ 	 //strftime(timeText,80,"%s ",timeinfo);
+ 	//return timeText;
 
 }
 
