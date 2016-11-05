@@ -26,7 +26,6 @@ int main (){
 	char command[MAXCOM];
 	char* argV[2][MAXARG];
 	int argC[2];
-	int fd[2];
 	int waitF,pid;
 	char* paths[20];
 	char hostname [20];
@@ -39,7 +38,6 @@ int main (){
 	cuserid(user);
 	chdir(path);
 	waitF=1;
-	pipe(fd);
 	
 
 	do
@@ -79,6 +77,8 @@ int main (){
 			}
 		} else {									// Si se ingreso un pipe, hago lo siguiente
 
+			int fd[2];
+			pipe(fd);
 			strcpy(executepath,argV[0][0]);
 			strcpy(executepath2,argV[1][0]);
 
@@ -90,22 +90,23 @@ int main (){
 				close(fd[1]);
 				execv(executepath, argV[0]); 
 
-				} else {             
-					wait(NULL);
-					if((pid= fork())>0)
+				} else {   
+					          
+					if((pid= fork())>=0)
 					{
 						if (pid==0){
-							dup2(fd[1],1);
 							close(fd[1]);
 							close(0);
 							dup(fd[0]);
 							close(fd[0]);
-							execv(executepath2, argV[1]); /* Here's stored the second instruction */
+							printf("\n");
+							execv(executepath2, argV[1]); 
 						}
-						close(fd[1]);
-						char buffer[1024]="";
-						read(fd[0],buffer,sizeof(buffer));
-						printf("%s",buffer );
+						
+						/*char buffer[1024]="";
+						read(fds,buffer,sizeof(buffer));
+						printf("aca taaaaa: %s",buffer );*/
+						wait(NULL);
 					}
 					else printf("ERROR: No se pudo crear el hijo" );
 				}
