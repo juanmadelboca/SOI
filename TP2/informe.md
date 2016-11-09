@@ -1,3 +1,6 @@
+![](http://www.saneurociencias.org.ar/wp-content/uploads/2012/12/UNC-logo.jpg)
+
+
 #Introduccion
 En el siguiente trabajo se solicito realizar un bash, un interpretador de comandos. Los comandos seran introducidos por el usuario e interpretados por el bash.
 A continuacion se responden los ejercicios orientativos para el desarrollo del bash.
