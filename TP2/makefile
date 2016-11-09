@@ -1,9 +1,10 @@
-shell: tareaA.o 
-	cc -o shell tareaA.o
+all: baash clean
+baash: baash.o 
+	cc -o baash baash.o
 
-tareaA.o: tareaA.c 
-	cc -c -pedantic -Wall tareaA.c
+baash.o: tareaA.c 
+	cc -c -pedantic -Wall baash.c
 
 clean: 
-	rm -f tareaA.o 
+	rm -f baash.o 
 

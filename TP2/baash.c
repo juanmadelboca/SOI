@@ -27,7 +27,6 @@ int main (){
 	char* argV[2][MAXARG];
 	int argC[2];
 	int waitF,pid;
-	char* paths[20];
 	char hostname [20];
 	char user[20];
 	char executepath[200];
