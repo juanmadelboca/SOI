@@ -1,4 +1,4 @@
-all: clean
+all: ksamp clean
 
 ksamp: ksamp.o base.o 
 	cc -o ksamp ksamp.o
