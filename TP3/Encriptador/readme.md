@@ -7,6 +7,7 @@
 - Escribir "sudo mknod encrip c 105 0" para crear el archivo del dispositivo.  
 - Por ultimo ejecutar ./ioctl para encriptar  
 - Para eliminar el modulo "sudo rmmod encriptador"  
+
 ---
 
 # MUY IMPORTANTE #
