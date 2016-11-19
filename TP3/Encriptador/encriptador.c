@@ -7,9 +7,9 @@
 #include <linux/fs.h>
 #include <asm/uaccess.h>	/* for get_user and put_user */
 
-#include "chardev.h"
+#include "encriptador.h"
 #define SUCCESS 0
-#define DEVICE_NAME "char_dev"
+#define DEVICE_NAME "encrip"
 #define BUF_LEN 80
 
 /* 
@@ -112,6 +112,7 @@ static ssize_t device_read(struct file *file,	/* see include/linux/fs.h   */
 		bytes_read++;
 	}
 
+
 #ifdef DEBUG
 	printk(KERN_INFO "Read %d bytes, %d left\n", bytes_read, length);
 #endif
@@ -137,8 +138,11 @@ device_write(struct file *file,
 	printk(KERN_INFO "device_write(%p,%s,%d)", file, buffer, length);
 #endif
 
-	for (i = 0; i < length && i < BUF_LEN; i++)
+	for (i = 0; i < length && i < BUF_LEN; i++){
 		get_user(Message[i], buffer + i);
+		if(Message[i]!='\0')
+			Message[i]=Message[i]+1;
+	}
 
 	Message_Ptr = Message;
 

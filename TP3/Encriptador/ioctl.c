@@ -9,7 +9,7 @@
  * device specifics, such as ioctl numbers and the
  * major device file. 
  */
-#include "chardev.h"
+#include "encriptador.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,7 +53,7 @@ void ioctl_get_msg(int file_desc)
 		exit(-1);
 	}
 
-	printf("[Modulo] Me mandaste: %s\n", message);
+	//printf("[Modulo] Me mandaste: %s\n", message);
 }
 
 void ioctl_get_nth_byte(int file_desc)
@@ -93,7 +93,7 @@ int main()
 		exit(-1);
 	}
 
-	printf("Escribi lo que le queres mandar al modulo\n" );
+	printf("Escribe el mensaje a encriptar: \n" );
 	fgets(msg,300,stdin);
 
 	ioctl_set_msg(file_desc, msg);

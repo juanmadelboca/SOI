@@ -6,8 +6,8 @@
  *  (in chardev.c) and the process calling ioctl (ioctl.c)
  */
 
-#ifndef CHARDEV_H
-#define CHARDEV_H
+#ifndef ENCRIPTADOR_H
+#define ENCRIPTADOR_H
 
 #include <linux/ioctl.h>
 
@@ -16,7 +16,7 @@
  * registration any more, because ioctls need to know 
  * it. 
  */
-#define MAJOR_NUM 100
+#define MAJOR_NUM 105
 
 /* 
  * Set the message of the device driver 
@@ -61,6 +61,6 @@
 /* 
  * The name of the device file 
  */
-#define DEVICE_FILE_NAME "char_dev"
+#define DEVICE_FILE_NAME "encrip"
 
 #endif

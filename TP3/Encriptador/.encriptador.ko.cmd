@@ -1,0 +1,1 @@
+cmd_/home/franco/SOI/TP3/Encriptador/encriptador.ko := ld -r -m elf_i386 -T ./scripts/module-common.lds --build-id  -o /home/franco/SOI/TP3/Encriptador/encriptador.ko /home/franco/SOI/TP3/Encriptador/encriptador.o /home/franco/SOI/TP3/Encriptador/encriptador.mod.o
