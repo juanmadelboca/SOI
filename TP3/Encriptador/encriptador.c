@@ -12,19 +12,19 @@
 #define DEVICE_NAME "encrip"
 #define BUF_LEN 80
 
-/* 
+/** 
  * Para evitar abrir 2 veces el archivo
  */
 static int Device_Open = 0;
 
 static char Message[BUF_LEN];
 
-/*
+/**
  * puntero para leer mensaje
  */
 static char *Message_Ptr;
 
-/* 
+/** 
  * cuando un proceso quiere leer el device llama a esta funcion
  */
 static int device_open(struct inode *inode, struct file *file)
@@ -56,7 +56,7 @@ static int device_release(struct inode *inode, struct file *file)
 	return SUCCESS;
 }
 
-/* 
+/**
  *Se llama a esta funcion cuando un proceso abrio el dev y quiere leerlo
  */
 static ssize_t device_read(struct file *file,	
@@ -93,7 +93,7 @@ static ssize_t device_read(struct file *file,
 	return bytes_read;
 }
 
-/* 
+/**
  *Funcion llamada cuando alguien quiere escribir el dev. 
  */
 static ssize_t
@@ -118,7 +118,7 @@ device_write(struct file *file,
 	return i;
 }
 
-/* 
+/**
  *esta funcion es llamada cuando el modulo necesita a ioctl ya sea para escribir o leer el dev
  */
 long device_ioctl(struct file *file,	
@@ -162,7 +162,7 @@ long device_ioctl(struct file *file,
 
 /* Module Declarations */
 
-/* 
+/** 
  * Esta estructura contiene las funciones que seran llamadas cuando un proceso haga algo al device que creamos
  * un puntero a esta estructura es guardado en la tabla de devices
  */
@@ -175,7 +175,7 @@ struct file_operations Fops = {
 
 };
 
-/* 
+/** 
  * Inicializa el modulo y lo registra
  */
 int init_module()
@@ -205,7 +205,7 @@ int init_module()
 }
 
 
-/* 
+/** 
  * Saca el modulo, lo desregistra 
  */
 void cleanup_module()
