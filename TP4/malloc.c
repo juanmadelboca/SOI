@@ -34,7 +34,10 @@ t_block find_block(t_block *last , size_t size){
 	return (b);
 }
 
-
+ /** 
+  *	
+  *
+ **/
 t_block extend_heap(t_block last , size_t s){
 	int sb;
 	t_block b;
