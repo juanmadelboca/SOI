@@ -2,11 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stddef.h>
+#include <sys/types.h>
 
 #define align4(x) (((((x)-1)>>2)<<2)+4)
 #define BLOCK_SIZE sizeof(struct s_block)
-void *base=NULL;
 
+
+typedef struct s_block *t_block;
 struct s_block {
 	size_t size;
 	struct s_block *next;
@@ -16,13 +19,10 @@ struct s_block {
 	/* A pointer to the allocated block */
 	char data[1];
 };
-typedef struct s_block *t_block;
-
-
-
-
 
 void *base=NULL;
+
+
 
 
 t_block find_block(t_block *last , size_t size){
@@ -33,7 +33,6 @@ t_block find_block(t_block *last , size_t size){
 	}
 	return (b);
 }
-
 
 
 t_block extend_heap(t_block last , size_t s){
