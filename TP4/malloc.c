@@ -16,7 +16,6 @@ struct s_block {
 	struct s_block *prev;
 	int free;
 	void *ptr;
-	/* A pointer to the allocated block */
 	char data[1];
 };
 
@@ -24,7 +23,9 @@ void *base=NULL;
 
 
 
-
+ /** 
+  *Esta funcion busca el siguiente bloque libre 
+ */
 t_block find_block(t_block *last , size_t size){
 	t_block b=base;
 	while (b && !(b->free && b->size >= size)) {
@@ -35,9 +36,8 @@ t_block find_block(t_block *last , size_t size){
 }
 
  /** 
-  *	
-  *
- **/
+  *Esta funcion extiende el tamño del monton actual 
+ */
 t_block extend_heap(t_block last , size_t s){
 	int sb;
 	t_block b;
@@ -57,7 +57,9 @@ t_block extend_heap(t_block last , size_t s){
 
 }
 
-
+/** 
+  *Esta funcion corta el bloque para que el bloque de datos quede del tamaño deseado
+ */
 
 void split_block(t_block b, size_t s){
 	t_block new;
@@ -73,7 +75,9 @@ void split_block(t_block b, size_t s){
 	new->next ->prev = new;
 }
 
-
+/** 
+  *Esta funcion une un bloque con su siguiente 
+ */
 
 t_block fusion(t_block b){
 	if (b->next && b->next ->free){
@@ -86,7 +90,7 @@ t_block fusion(t_block b){
 }
 
 
-/* Get the block from and addr */
+
 t_block get_block(void *p)
 {
 	char *tmp;
@@ -94,7 +98,7 @@ t_block get_block(void *p)
 	return (p = tmp -= BLOCK_SIZE);
 }
 
-/* Valid addr for free */
+
 int valid_addr(void *p)
 {
 	 
@@ -108,7 +112,9 @@ int valid_addr(void *p)
 	return (0);
 }
 
-
+/** 
+  *Esta funcion alloca la cantidad de memoria necesaria para el arreglo que recibe como parametro
+ */
 void *calloc(size_t number , size_t size){
 	size_t *new;
 	size_t s4,i;
@@ -120,7 +126,9 @@ void *calloc(size_t number , size_t size){
 	}
 	return (new);
 }
-
+/** 
+  *Esta funcion alloca la cantidad de memoria que recibe como parametro
+ */
 
 void *malloc(size_t size){
 	t_block b,last;
@@ -157,9 +165,9 @@ void *malloc(size_t size){
 
 
 
-
-/* The free */
-/* See free(3) */
+/** 
+  *Esta funcion libera la memoria allocada
+ */
 void free(void *p)
 {
 	t_block b;
@@ -189,7 +197,9 @@ void free(void *p)
 	}
 }
 
-/* Copy data from block to block */
+ /** 
+  *Esta funcion copia los datos desde un bloque a otro
+ */
 void copy_block(t_block src, t_block dst)
 {
 	int *sdata ,*ddata;
